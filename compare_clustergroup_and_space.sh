@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# based on a script by Orf Gelbrich
+# compares cluster group capabilities to the capabiliites applied to a space via it's profile(s)
+# usage:
+#   - update the 'TARGET_*' env vars to specify the project, space, and clustergroup
+# when using 'git diff' as the diff tool, green capabilities are those that need to be installed to the cluster group as they're missing
+
 # set the target project, space, and cluster group to inspect
 TARGET_PROJECT="AMER-East"
 TARGET_SPACE="cro-fxg-space"
