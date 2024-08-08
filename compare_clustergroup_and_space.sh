@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-# save current context
-CURRENT_CONTEXT="$(tanzu context current --short)"
-#CURRENT_CONTEXT_ORG="$(echo "${CURRENT_CONTEXT}" | awk -F ':' '{print $1}')"
-CURRENT_CONTEXT_PROJECT="$(echo "${CURRENT_CONTEXT}" | awk -F ':' '{print $2}')"
-CURRENT_CONTEXT_SPACE="$(echo "${CURRENT_CONTEXT}" | awk -F ':' '{print $3}')"
-
-#export KUBECONFIG="${HOME}/.config/tanzu/kube/config"
-
 # set the target project, space, and cluster group to inspect
 TARGET_PROJECT="AMER-East"
 TARGET_SPACE="cro-fxg-space"
@@ -16,6 +8,21 @@ TARGET_CLUSTERGROUP="cro-fxg-cg"
 #TARGET_PROJECT="AMER-East"
 #TARGET_SPACE="mbentley-space"
 #TARGET_CLUSTERGROUP="mbentley-clustergroup"
+
+#TARGET_PROJECT="AMER-East"
+#TARGET_SPACE="orf-rabbitmq-01"
+#TARGET_CLUSTERGROUP="orfclustergroup2"
+
+# set the diff tool to use
+#DIFF_TOOL="sdiff"
+DIFF_TOOL="git diff"
+
+### END USER MODIFYABLE OBJECTS; DO NOT CHANGE BELOW HERE
+
+# save current context as "previous" to restore later
+PREVIOUS_CONTEXT="$(tanzu context current --short)"
+PREVIOUS_CONTEXT_PROJECT="$(echo "${PREVIOUS_CONTEXT}" | awk -F ':' '{print $2}')"
+PREVIOUS_CONTEXT_SPACE="$(echo "${PREVIOUS_CONTEXT}" | awk -F ':' '{print $3}')"
 
 # get current org info
 TANZU_CONTEXT_LIST="$(tanzu context list -o json)"
@@ -64,32 +71,33 @@ SPACE_OUTPUT="$(echo -e "${LINE}\nSpace Capabilities\n${LINE}")"
 echo "INFO: getting the capabilities for the space '${TARGET_SPACE}'..."
 SPACE_OUTPUT="$(echo "${SPACE_OUTPUT}" && tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities.[].name' | sort)"
 
-# do a diff using sdiff to see the changes side by side
-echo -e "\nINFO: sdiff between the clustergroup and space:"
-sdiff <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
+# do a diff to see the changes side by side
+echo -e "\nINFO: ${DIFF_TOOL} between the clustergroup and space:"
+${DIFF_TOOL} <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
 
 # get info about the profiles set on the space
 for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles.[].name')
 do
   PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
-  echo -e "\n${LINE}\n${PROFILE}\n${LINE}"
+  echo -e "\n${LINE}\nProfile: ${PROFILE}\n${LINE}"
   echo "Capabilities:"
   echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities.[].name'
 
   echo -e "\nTraits:"
   echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits.[].name'
+  echo -e "${LINE}\n"
 done
 
 # return to previous settings, if present
 echo -e "\nINFO: setting context back to previous settings; if set..."
-if [ -n "${CURRENT_CONTEXT_PROJECT}" ] && [ "${CURRENT_CONTEXT_PROJECT}" != "${TARGET_PROJECT}" ]
+if [ -n "${PREVIOUS_CONTEXT_PROJECT}" ] && [ "${PREVIOUS_CONTEXT_PROJECT}" != "${TARGET_PROJECT}" ]
 then
-  echo "INFO: setting project back to '${CURRENT_CONTEXT_PROJECT}' from '${TARGET_PROJECT}'..."
-  tanzu project use "${CURRENT_CONTEXT_PROJECT}"
+  echo "INFO: setting project back to '${PREVIOUS_CONTEXT_PROJECT}' from '${TARGET_PROJECT}'..."
+  tanzu project use "${PREVIOUS_CONTEXT_PROJECT}"
 fi
 
-if [ -n "${CURRENT_CONTEXT_SPACE}" ] && [ "${CURRENT_CONTEXT_SPACE}" != "${TARGET_SPACE}" ]
+if [ -n "${PREVIOUS_CONTEXT_SPACE}" ] && [ "${PREVIOUS_CONTEXT_SPACE}" != "${TARGET_SPACE}" ]
 then
-  echo "INFO: setting space back to '${CURRENT_CONTEXT_SPACE}' from '${TARGET_SPACE}'..."
-  tanzu space use "${CURRENT_CONTEXT_SPACE}"
+  echo "INFO: setting space back to '${PREVIOUS_CONTEXT_SPACE}' from '${TARGET_SPACE}'..."
+  tanzu space use "${PREVIOUS_CONTEXT_SPACE}"
 fi
