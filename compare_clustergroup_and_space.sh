@@ -7,21 +7,21 @@
 # when using 'git diff' as the diff tool, green capabilities are those that need to be installed to the cluster group as they're missing
 
 # set the target project, space, and cluster group to inspect
-TARGET_PROJECT="AMER-East"
-TARGET_SPACE="cro-fxg-space"
-TARGET_CLUSTERGROUP="cro-fxg-cg"
+#TARGET_PROJECT="AMER-East"
+#TARGET_SPACE="cro-fxg-space"
+#TARGET_CLUSTERGROUP="cro-fxg-cg"
 
 #TARGET_PROJECT="AMER-East"
 #TARGET_SPACE="mbentley-space"
 #TARGET_CLUSTERGROUP="mbentley-clustergroup"
 
-#TARGET_PROJECT="AMER-East"
-#TARGET_SPACE="orf-rabbitmq-01"
-#TARGET_CLUSTERGROUP="orfclustergroup2"
+TARGET_PROJECT="AMER-East"
+TARGET_SPACE="orf-rabbitmq-01"
+TARGET_CLUSTERGROUP="orfclustergroup2"
 
 # set the diff tool to use
 #DIFF_TOOL="sdiff"
-DIFF_TOOL="git diff"
+DIFF_TOOL="diff --color -u"
 
 ### END USER MODIFYABLE OBJECTS; DO NOT CHANGE BELOW HERE
 
@@ -63,8 +63,8 @@ CLUSTERGROUP_OUTPUT="$(echo -e "${LINE}\nCluster Group Capabilities\n${LINE}")"
 
 # get one of the clusters from the clustergroup to get data on
 CLUSTERS="$(tanzu operations cluster list -o json)"
-CLUSTER_NAME="$(echo "${CLUSTERS}" | jq -r '.clusters.[] | select(.spec.clusterGroupName == "'"${TARGET_CLUSTERGROUP}"'") | .fullName.name' | head -n 1)"
-CLUSTERGROUP_OUTPUT="$(echo "${CLUSTERGROUP_OUTPUT}" && kubectl --kubeconfig "${HOME}/.config/tanzu/kube/config" get kubernetescluster "${CLUSTER_NAME}" -o json | jq -r '.status.capabilities.[].name' | sort)"
+CLUSTER_NAME="$(echo "${CLUSTERS}" | jq -r '.clusters[] | select(.spec.clusterGroupName == "'"${TARGET_CLUSTERGROUP}"'") | .fullName.name' | head -n 1)"
+CLUSTERGROUP_OUTPUT="$(echo "${CLUSTERGROUP_OUTPUT}" && kubectl --kubeconfig "${HOME}/.config/tanzu/kube/config" get kubernetescluster "${CLUSTER_NAME}" -o json | jq -r '.status.capabilities[].name' | sort)"
 
 # set the space
 echo "INFO: setting space to ${TARGET_SPACE}..."
@@ -75,22 +75,22 @@ SPACE_OUTPUT="$(echo -e "${LINE}\nSpace Capabilities\n${LINE}")"
 
 # get the capabilities provided by the space
 echo "INFO: getting the capabilities for the space '${TARGET_SPACE}'..."
-SPACE_OUTPUT="$(echo "${SPACE_OUTPUT}" && tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities.[].name' | sort)"
+SPACE_OUTPUT="$(echo "${SPACE_OUTPUT}" && tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities[].name' | sort)"
 
 # do a diff to see the changes side by side
 echo -e "\nINFO: ${DIFF_TOOL} between the clustergroup and space:"
 ${DIFF_TOOL} <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
 
 # get info about the profiles set on the space
-for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles.[].name')
+for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles[].name')
 do
   PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
   echo -e "\n${LINE}\nProfile: ${PROFILE}\n${LINE}"
   echo "Capabilities:"
-  echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities.[].name'
+  echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities[].name'
 
   echo -e "\nTraits:"
-  echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits.[].name'
+  echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits[].name'
   echo -e "${LINE}\n"
 done
 
