@@ -46,41 +46,38 @@ tanzu operations clustergroup use "${TARGET_CLUSTERGROUP}"
 
 # start output for the clustergroup
 echo "INFO: getting the capabilities for the clustergroup '${TARGET_CLUSTERGROUP}'..."
-echo -e "${LINE}\nCluster Group Capabilities\n${LINE}" > /tmp/clustergroup.txt
+CLUSTERGROUP_OUTPUT="$(echo -e "${LINE}\nCluster Group Capabilities\n${LINE}")"
 
 # get one of the clusters from the clustergroup to get data on
 CLUSTERS="$(tanzu operations cluster list -o json)"
 CLUSTER_NAME="$(echo "${CLUSTERS}" | jq -r '.clusters.[] | select(.spec.clusterGroupName == "'"${TARGET_CLUSTERGROUP}"'") | .fullName.name' | head -n 1)"
-kubectl --kubeconfig "${HOME}/.config/tanzu/kube/config" get kubernetescluster "${CLUSTER_NAME}" -o json | jq -r '.status.capabilities.[].name' | sort >> /tmp/clustergroup.txt
+CLUSTERGROUP_OUTPUT="$(echo "${CLUSTERGROUP_OUTPUT}" && kubectl --kubeconfig "${HOME}/.config/tanzu/kube/config" get kubernetescluster "${CLUSTER_NAME}" -o json | jq -r '.status.capabilities.[].name' | sort)"
 
 # set the space
 echo "INFO: setting space to ${TARGET_SPACE}..."
 tanzu space use "${TARGET_SPACE}"
 echo
 
-echo -e "${LINE}\nSpace Capabilities\n${LINE}" > /tmp/space.txt
+SPACE_OUTPUT="$(echo -e "${LINE}\nSpace Capabilities\n${LINE}")"
 
 # get the capabilities provided by the space
 echo "INFO: getting the capabilities for the space '${TARGET_SPACE}'..."
-tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities.[].name' | sort >> /tmp/space.txt
+SPACE_OUTPUT="$(echo "${SPACE_OUTPUT}" && tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities.[].name' | sort)"
 
 # do a diff using sdiff to see the changes side by side
 echo -e "\nINFO: sdiff between the clustergroup and space:"
-sdiff /tmp/clustergroup.txt /tmp/space.txt
+sdiff <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
 
-# cleanup the clustergroup & space temp files
-rm /tmp/clustergroup.txt /tmp/space.txt
-
-# get info about the profiles
+# get info about the profiles set on the space
 for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles.[].name')
 do
-  TANZU_PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
+  PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
   echo -e "\n${LINE}\n${PROFILE}\n${LINE}"
   echo "Capabilities:"
-  echo "${TANZU_PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities.[].name'
+  echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities.[].name'
 
   echo -e "\nTraits:"
-  echo "${TANZU_PROFILE_OUTPUT}" | jq -r '.spec.traits.[].name'
+  echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits.[].name'
 done
 
 # return to previous settings, if present
