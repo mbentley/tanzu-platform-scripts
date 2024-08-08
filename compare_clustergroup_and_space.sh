@@ -25,6 +25,12 @@ DIFF_TOOL="diff --color -u"
 
 ### END USER MODIFYABLE OBJECTS; DO NOT CHANGE BELOW HERE
 
+# let user know what we're checking
+echo -e "INFO: checking capabilities for:
+  Project:          ${TARGET_PROJECT}
+  Space:            ${TARGET_SPACE}
+  Cluster Group:    ${TARGET_CLUSTERGROUP}\n"
+
 # save current context as "previous" to restore later
 PREVIOUS_CONTEXT="$(tanzu context current --short)"
 PREVIOUS_CONTEXT_PROJECT="$(echo "${PREVIOUS_CONTEXT}" | awk -F ':' '{print $2}')"
@@ -78,21 +84,29 @@ echo "INFO: getting the capabilities for the space '${TARGET_SPACE}'..."
 SPACE_OUTPUT="$(echo "${SPACE_OUTPUT}" && tanzu space get "${TARGET_SPACE}" -o json | jq -r '.status.providedCapabilities[].name' | sort)"
 
 # do a diff to see the changes side by side
-echo -e "\nINFO: ${DIFF_TOOL} between the clustergroup and space:"
+echo -e "\nINFO: ${DIFF_TOOL%% *} between the clustergroup and space:"
 ${DIFF_TOOL} <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
 
-# get info about the profiles set on the space
-for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles[].name')
-do
-  PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
-  echo -e "\n${LINE}\nProfile: ${PROFILE}\n${LINE}"
-  echo "Capabilities:"
-  echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities[].name'
+# output extra capabilities not required
+echo -e "\nINFO: the follow capabilities are NOT required by the profile(s) selected but have been installed:"
+diff -u <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}") | grep -vE '(^---)|(^-Cluster Group Capabilities$)' | grep '^-' | cut -c 2- | sed 's/^/  /'
 
-  echo -e "\nTraits:"
-  echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits[].name'
-  echo -e "${LINE}\n"
-done
+# output extra capabilities not required
+echo -e "\nINFO: the follow capabilities ARE required by the profile(s) selected but have not been installed:"
+diff -u <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}") | grep -vE '(^\+\+\+)|(^\+Space Capabilities$)' | grep '^+' | cut -c 2- | sed 's/^/  /'
+
+## get info about the profiles set on the space
+#for PROFILE in $(tanzu space get "${TARGET_SPACE}" -o json | jq -r '.spec.template.spec.profiles[].name')
+#do
+#  PROFILE_OUTPUT="$(tanzu profile get mbentley-profile -o json)"
+#  echo -e "\n${LINE}\nProfile: ${PROFILE}\n${LINE}"
+#  echo "Capabilities:"
+#  echo "${PROFILE_OUTPUT}" | jq -r '.spec.requiredCapabilities[].name'
+#
+#  echo -e "\nTraits:"
+#  echo "${PROFILE_OUTPUT}" | jq -r '.spec.traits[].name'
+#  echo -e "${LINE}\n"
+#done
 
 # return to previous settings, if present
 echo -e "\nINFO: setting context back to previous settings; if set..."
