@@ -119,7 +119,7 @@ then
   echo "WARN: there are no profiles assigned to your space (${TARGET_SPACE})!"
 else
   # there are profiles assigned
-  echo "INFO: the following profiles are configured for your space (${TARGET_SPACE})"
+  echo "INFO: the following profiles are configured for your space (${TARGET_SPACE}):"
   for PROFILE in ${PROFILES_ASSIGNED}
   do
     PROFILE_OUTPUT="$(tanzu profile get "${PROFILE}" -o json)"
