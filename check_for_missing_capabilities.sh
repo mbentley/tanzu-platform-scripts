@@ -158,7 +158,7 @@ MISSING_CAPABILITIES="$(diff -u <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE
 if [ -z "${MISSING_CAPABILITIES}" ]
 then
   # no missing
-  echo -e "\nINFO: all of the required capabilities were found installed to the clustergroup; the space should be 'ready'"
+  echo -e "\nINFO: all of the required capabilities were found installed to the clustergroup; capabilities shouldn't block the space from being 'ready'"
 else
   # missing
   echo -e "\nWARN: the following capabilities ARE required by the profile(s) selected but have not been installed; the space will not be 'ready' until they're installed:"
