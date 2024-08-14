@@ -10,12 +10,7 @@
 TARGET_PROJECT="AMER-East"
 # TODO: try to be able to find the clustergroup from the space via the availability target (there might be multiple cluster groups)
 # TODO: verify that we can see the space and clustergroup
-# TODO: make sure all jq commands go to 2>/dev/null to catch errors
-
-#TARGET_SPACE="cro-fxg-space"
-#TARGET_SPACE="cro-fxd-space"
-#TARGET_SPACE="cro-fxg-space-2"
-#TARGET_CLUSTERGROUP="cro-fxg-cg"
+# TODO: make sure all jq commands go to 2>/dev/null to catch errors (or add a function to catch jq errors?)
 
 #TARGET_SPACE="mbentley-space"
 #TARGET_CLUSTERGROUP="mbentley-clustergroup"
@@ -33,6 +28,27 @@ DIFF_TOOL="sdiff"
 _indent() {
   sed 's/^/  /'
 }
+
+# function that validates required application is available (thanks cdelashmutt - https://gist.github.com/cdelashmutt-pivotal/fe7a84249689124c5c4dc08dd3fca034#file-copy-capabilities-sh-L4-L9)
+requires() {
+  if ! command -v "${1}" &>/dev/null
+  then
+    echo "Error: requires ${1}"
+    exit 1
+  fi
+}
+
+# validate requirements
+requires "awk"
+requires "cut"
+requires "diff"
+requires "grep"
+requires "head"
+requires "jq"
+requires "kubectl"
+requires "sdiff"
+requires "sed"
+requires "tanzu"
 
 # let user know what we're checking
 echo -e "INFO: checking capabilities for:
@@ -65,7 +81,6 @@ fi
 
 # variable to output a line of standard length
 LINE="-------------------------------------------------------------"
-#LINE="-------------------------------------------------"
 
 # set the project
 echo "INFO: setting project to ${TARGET_PROJECT}..."
