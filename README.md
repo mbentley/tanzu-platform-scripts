@@ -19,5 +19,5 @@ tanzu operations apply -f ./tp4k8s/policies/allow-privileged.yaml
 Apply mutating policies to allow root and r/w filesystems for namespaces with a `spaces.tanzu.vmware.com/name` label:
 
 ```bash
-tanzu operations apply -f ./tp4k8s/allow-root-and-rw-fs.yaml
+tanzu operations apply -f ./tp4k8s/policies/allow-root-and-rw-fs.yaml
 ```
