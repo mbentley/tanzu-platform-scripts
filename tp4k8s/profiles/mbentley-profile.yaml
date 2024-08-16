@@ -1,7 +1,7 @@
 apiVersion: spaces.tanzu.vmware.com/v1alpha1
 kind: Profile
 metadata:
-  name: mbentley-profile2
+  name: mbentley-profile
   namespace: default
 spec:
   description: Matt's profile

@@ -6,7 +6,30 @@ Warning: this repo is very much a work in progress and things are likely to be i
 
 ## Tanzu Platform for Kubernetes Configuration
 
-In this example, I need to be able to run containers as root and have r/w container filesystems.
+Steps:
+
+In this example, I need to be able to run containers as root and have r/w container filesystems. This has instructions for creating the availability target, profile, space, and applying my policies.
+
+### Availability Targets
+
+```bash
+tanzu project use AMER-East
+tanzu deploy -y --only ./tp4k8s/availability-targets/mbentley-home-at.yaml
+```
+
+### Profiles
+
+```bash
+tanzu project use AMER-East
+tanzu deploy -y --only ./tp4k8s/profiles/mbentley-profile.yaml
+```
+
+### Spaces
+
+```bash
+tanzu project use AMER-East
+tanzu deploy -y --only ./tp4k8s/spaces/mbentley-space.yaml
+```
 
 ### Policies
 
