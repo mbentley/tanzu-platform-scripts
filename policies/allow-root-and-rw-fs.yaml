@@ -1,0 +1,27 @@
+type:
+  kind: Policy
+  version: v1alpha1
+  package: vmware.tanzu.manage.v1alpha1.clustergroup.policy
+fullName:
+  clusterGroupName: mbentley-clustergroup
+  name: allow-root-and-rw-fs
+spec:
+  type: mutation-policy
+  recipe: pod-security
+  recipeVersion: v1
+  input:
+    readOnlyRootFilesystem:
+      condition: Always
+      value: false
+    runAsNonRoot:
+      condition: Always
+      value: false
+  namespaceSelector:
+    matchExpressions:
+      - key: pod-security.kubernetes.io/enforce
+        operator: In
+        values:
+          - privileged
+      - key: spaces.tanzu.vmware.com/name
+        operator: Exists
+        values: []
