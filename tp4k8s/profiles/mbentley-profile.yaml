@@ -1,76 +1,8 @@
 apiVersion: spaces.tanzu.vmware.com/v1alpha1
 kind: Profile
 metadata:
-  annotations:
-    spaces.tanzu.vmware.com/referenced: '[{"name":"mbentley-space"}]'
-  creationTimestamp: 2024-06-05T21:06:45Z
-  generation: 9
-  labels:
-    claimed.internal.apis.kcp.io/1c8nAiAmP283rsP5PQqYqmhbwN8cQXbC3Q9L0R: ORAXSvm5cCIw32fR3WyfCPcGhICr4cnybxGRw
-  managedFields:
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:metadata:
-          f:annotations:
-            f:spaces.tanzu.vmware.com/referenced: {}
-      manager: ucp-runtime-controllers
-      operation: Update
-      time: 2024-06-14T22:21:29Z
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:spec:
-          .: {}
-          f:description: {}
-          f:requiredCapabilities: {}
-          f:traits: {}
-      manager: ucp
-      operation: Update
-      time: 2024-07-03T17:58:33Z
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:status:
-          .: {}
-          f:conditions: {}
-          f:requiredCapabilities: {}
-          f:traits: {}
-          f:valuesSchema:
-            .: {}
-            f:openAPIv3:
-              .: {}
-              f:additionalProperties: {}
-              f:properties:
-                .: {}
-                f:carvel-package-installer.tanzu.vmware.com:
-                  .: {}
-                  f:additionalProperties: {}
-                  f:properties:
-                    .: {}
-                    f:carvel-package-installer:
-                      .: {}
-                      f:additionalProperties: {}
-                      f:properties:
-                        .: {}
-                        f:serviceAccountName:
-                          .: {}
-                          f:default: {}
-                          f:description: {}
-                          f:minLength: {}
-                          f:title: {}
-                          f:type: {}
-                      f:type: {}
-                  f:type: {}
-              f:type: {}
-      manager: ucp-runtime-controllers
-      operation: Update
-      subresource: status
-      time: 2024-08-14T23:51:41Z
-  name: mbentley-profile
+  name: mbentley-profile2
   namespace: default
-  resourceVersion: "39963276"
-  uid: 6b4b2c2e-5752-4b98-a8e9-1ac03c758eca
 spec:
   description: Matt's profile
   requiredCapabilities:
@@ -85,45 +17,3 @@ spec:
         inline:
           carvel-package-installer:
             serviceAccountName: carvel-package-installer
-status:
-  conditions:
-    - lastTransitionTime: 2024-08-14T23:51:41Z
-      message: Resolved
-      reason: Resolved
-      status: "True"
-      type: TraitsResolved
-    - lastTransitionTime: 2024-08-14T23:51:41Z
-      message: Ready
-      reason: Completed
-      status: "True"
-      type: Ready
-  requiredCapabilities:
-    - name: certificates.tanzu.vmware.com
-    - name: container-app.tanzu.vmware.com
-    - name: package-management.tanzu.vmware.com
-    - name: k8sgateway.tanzu.vmware.com
-  traits:
-    - alias: carvel-package-installer.tanzu.vmware.com
-      name: carvel-package-installer.tanzu.vmware.com
-      state: Resolved
-  valuesSchema:
-    openAPIv3:
-      additionalProperties: false
-      properties:
-        carvel-package-installer.tanzu.vmware.com:
-          additionalProperties: false
-          properties:
-            carvel-package-installer:
-              additionalProperties: false
-              properties:
-                serviceAccountName:
-                  default: carvel-package-installer
-                  description: Name of the ServiceAccount used to install the contents of the
-                    ContainerApp package. It contains sufficient permissions to
-                    create the direct content of the package.
-                  minLength: 1
-                  title: Service Account Name
-                  type: string
-              type: object
-          type: object
-      type: object

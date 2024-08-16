@@ -1,67 +1,8 @@
 apiVersion: spaces.tanzu.vmware.com/v1alpha1
 kind: Space
 metadata:
-  annotations:
-    space.tanzu.vmware.com/revision: "6"
-    ucp.tanzu.vmware.com/owner: mbentley@vmware.com
-  creationTimestamp: 2024-06-14T22:21:29Z
-  finalizers:
-    - spaces.tanzu.vmware.com/finalizer
-  generation: 4
-  managedFields:
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:metadata:
-          f:annotations:
-            .: {}
-            f:ucp.tanzu.vmware.com/owner: {}
-          f:finalizers:
-            .: {}
-            v:"spaces.tanzu.vmware.com/finalizer": {}
-        f:spec:
-          .: {}
-          f:availabilityTargets: {}
-          f:description: {}
-          f:revisionHistoryLimit: {}
-          f:template:
-            .: {}
-            f:spec:
-              .: {}
-              f:profiles: {}
-              f:resources: {}
-          f:updateStrategy:
-            .: {}
-            f:type: {}
-      manager: ucp
-      operation: Update
-      time: 2024-07-16T14:27:25Z
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:metadata:
-          f:annotations:
-            f:space.tanzu.vmware.com/revision: {}
-      manager: ucp-runtime-controllers
-      operation: Update
-      time: 2024-08-01T11:26:56Z
-    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:status:
-          .: {}
-          f:availabilityTargets: {}
-          f:conditions: {}
-          f:providedCapabilities: {}
-          f:resolvedProfiles: {}
-      manager: ucp-runtime-controllers
-      operation: Update
-      subresource: status
-      time: 2024-08-16T01:10:10Z
   name: mbentley-space
   namespace: default
-  resourceVersion: "40608085"
-  uid: bd0673de-cf7c-4ae8-aa69-d6504e7ab4ea
 spec:
   availabilityTargets:
     - name: mbentley-home-at
@@ -76,44 +17,3 @@ spec:
       resources: {}
   updateStrategy:
     type: RollingUpdate
-status:
-  availabilityTargets:
-    - name: mbentley-home-at
-      readyReplicas: 2
-      replicas: 2
-      updatedReplicas: ""
-  conditions:
-    - lastTransitionTime: 2024-07-03T11:39:44Z
-      message: Referred Profiles have been successfully resolved
-      reason: ProfilesResolved
-      status: "True"
-      type: ProfilesReady
-    - lastTransitionTime: 2024-07-16T14:27:26Z
-      message: Referred AvailabilityTargets have been successfully resolved
-      reason: AvailabilityTargetsResolved
-      status: "True"
-      type: AvailabilityTargetsReady
-    - lastTransitionTime: 2024-08-01T11:33:14Z
-      message: Space has Minimum available replicas ready
-      reason: MinimumAvailabilitySatisfied
-      status: "True"
-      type: Available
-    - lastTransitionTime: 2024-08-16T01:10:10Z
-      message: ManagedNamespaceSet "mbentley-space-7856b8746c" has successfully
-        progressed.
-      reason: NewManagedNamespaceSetAvailable
-      status: "True"
-      type: LatestManagedNamespaceSetReady
-    - lastTransitionTime: 2024-08-16T01:10:10Z
-      message: successfully scheduled
-      reason: Scheduling
-      status: "True"
-      type: Ready
-  providedCapabilities:
-    - name: certificates.tanzu.vmware.com
-    - name: container-app.tanzu.vmware.com
-    - name: package-management.tanzu.vmware.com
-    - name: k8sgateway.tanzu.vmware.com
-  resolvedProfiles:
-    - name: mbentley-profile
-      state: Resolved
