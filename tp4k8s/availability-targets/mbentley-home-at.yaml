@@ -1,0 +1,79 @@
+apiVersion: spaces.tanzu.vmware.com/v1alpha1
+kind: AvailabilityTarget
+metadata:
+  annotations:
+    spaces.tanzu.vmware.com/referenced: '[{"name":"mbentley-space"}]'
+  creationTimestamp: 2024-07-11T15:21:43Z
+  generation: 1
+  managedFields:
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          .: {}
+          f:affinity:
+            .: {}
+            f:clusterAffinity:
+              .: {}
+              f:clusterSelectorTerms: {}
+            f:clusterAntiAffinity:
+              .: {}
+              f:clusterSelectorTerms: {}
+          f:description: {}
+      manager: ucp
+      operation: Update
+      time: 2024-07-11T15:21:43Z
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:spaces.tanzu.vmware.com/referenced: {}
+      manager: ucp-runtime-controllers
+      operation: Update
+      time: 2024-07-11T15:23:33Z
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          .: {}
+          f:clusters: {}
+          f:conditions: {}
+      manager: ucp-runtime-controllers
+      operation: Update
+      subresource: status
+      time: 2024-08-07T13:51:36Z
+  name: mbentley-home-at
+  namespace: default
+  resourceVersion: "35150931"
+  uid: a100e73f-7911-4eb4-a1e8-9c2787a0af6a
+spec:
+  affinity:
+    clusterAffinity:
+      clusterSelectorTerms:
+        - matchExpressions:
+            - key: tmc.cloud.vmware.com/creator
+              operator: In
+              values:
+                - mbentley
+            - key: mbentley-env
+              operator: In
+              values:
+                - home
+    clusterAntiAffinity:
+      clusterSelectorTerms: []
+  description: mbentley home at
+status:
+  clusters:
+    - clusterGroup: mbentley-clustergroup
+      name: mbentley-home-ns1-c1
+      namespace: default
+    - clusterGroup: mbentley-clustergroup
+      name: mbentley-home-ns1-c2
+      namespace: default
+  conditions:
+    - lastTransitionTime: 2024-08-07T13:51:36Z
+      message: clusters selected based on provided rules
+      reason: ClustersResolved
+      status: "True"
+      type: Ready

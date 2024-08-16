@@ -1,0 +1,72 @@
+apiVersion: spaces.tanzu.vmware.com/v1alpha1
+kind: AvailabilityTarget
+metadata:
+  annotations:
+    spaces.tanzu.vmware.com/referenced: "[]"
+  creationTimestamp: 2024-07-09T18:39:27Z
+  generation: 3
+  managedFields:
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          .: {}
+          f:affinity:
+            .: {}
+            f:clusterAffinity:
+              .: {}
+              f:clusterSelectorTerms: {}
+            f:clusterAntiAffinity:
+              .: {}
+              f:clusterSelectorTerms: {}
+          f:description: {}
+      manager: ucp
+      operation: Update
+      time: 2024-07-09T18:57:37Z
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          .: {}
+          f:conditions: {}
+      manager: ucp-runtime-controllers
+      operation: Update
+      subresource: status
+      time: 2024-07-13T02:32:06Z
+    - apiVersion: spaces.tanzu.vmware.com/v1alpha1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:spaces.tanzu.vmware.com/referenced: {}
+      manager: ucp-runtime-controllers
+      operation: Update
+      time: 2024-07-16T14:27:25Z
+  name: mbentley-lab-at
+  namespace: default
+  resourceVersion: "21582504"
+  uid: eb0264b9-3e21-4055-a4ba-ce7fe1bd2b32
+spec:
+  affinity:
+    clusterAffinity:
+      clusterSelectorTerms:
+        - matchExpressions:
+            - key: mbentley-env
+              operator: In
+              values:
+                - lab
+    clusterAntiAffinity:
+      clusterSelectorTerms: []
+  description: mbentley lab at
+status:
+  conditions:
+    - lastTransitionTime: 2024-07-13T02:32:06Z
+      message: no clusters match provided rules
+      reason: ClustersUnresolved
+      status: "False"
+      type: Ready
+    - lastTransitionTime: 2024-07-13T02:32:06Z
+      message: no clusters match provided rules
+      reason: ClustersUnresolved
+      status: "True"
+      type: Reconciling
