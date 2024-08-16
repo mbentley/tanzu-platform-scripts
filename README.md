@@ -4,11 +4,11 @@ Example scripts and yaml for Tanzu Platform
 
 Warning: this repo is very much a work in progress and things are likely to be in a mixed state of working and not working
 
-## Configuration & Deployment
+## Tanzu Platform for Kubernetes Configuration
 
 In this example, I need to be able to run containers as root and have r/w container filesystems.
 
-### Configuration
+### Policies
 
 Set `pod-security.kubernetes.io/enforce` to `privileged` for namespaces with a `spaces.tanzu.vmware.com/name` label:
 
