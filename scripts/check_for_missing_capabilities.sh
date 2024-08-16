@@ -10,12 +10,7 @@
 TARGET_PROJECT="AMER-East"
 # TODO: try to be able to find the clustergroup from the space via the availability target (there might be multiple cluster groups)
 # TODO: verify that we can see the space and clustergroup
-# TODO: make sure all jq commands go to 2>/dev/null to catch errors
-
-#TARGET_SPACE="cro-fxg-space"
-#TARGET_SPACE="cro-fxd-space"
-#TARGET_SPACE="cro-fxg-space-2"
-#TARGET_CLUSTERGROUP="cro-fxg-cg"
+# TODO: make sure all jq commands go to 2>/dev/null to catch errors (or add a function to catch jq errors?)
 
 #TARGET_SPACE="mbentley-space"
 #TARGET_CLUSTERGROUP="mbentley-clustergroup"
@@ -33,6 +28,27 @@ DIFF_TOOL="sdiff"
 _indent() {
   sed 's/^/  /'
 }
+
+# function that validates required application is available (thanks cdelashmutt - https://gist.github.com/cdelashmutt-pivotal/fe7a84249689124c5c4dc08dd3fca034#file-copy-capabilities-sh-L4-L9)
+requires() {
+  if ! command -v "${1}" &>/dev/null
+  then
+    echo "Error: requires ${1}"
+    exit 1
+  fi
+}
+
+# validate requirements
+requires "awk"
+requires "cut"
+requires "diff"
+requires "grep"
+requires "head"
+requires "jq"
+requires "kubectl"
+requires "sdiff"
+requires "sed"
+requires "tanzu"
 
 # let user know what we're checking
 echo -e "INFO: checking capabilities for:
@@ -64,7 +80,7 @@ else
 fi
 
 # variable to output a line of standard length
-LINE="-----------------------------------------------------------------"
+LINE="-------------------------------------------------------------"
 
 # set the project
 echo "INFO: setting project to ${TARGET_PROJECT}..."
@@ -123,30 +139,32 @@ else
   for PROFILE in ${PROFILES_ASSIGNED}
   do
     PROFILE_OUTPUT="$(tanzu profile get "${PROFILE}" -o json)"
-    echo -e "\n${LINE}\nProfile: ${PROFILE}\n${LINE}"
+    echo -e "${LINE}\nProfile: ${PROFILE}\n${LINE}"
     echo "Capabilities:"
     echo "${PROFILE_OUTPUT}" | (jq -r '.spec.requiredCapabilities[].name' 2>/dev/null || echo "<none found>") | _indent
 
     echo -e "Traits:"
     echo "${PROFILE_OUTPUT}" | (jq -r '.spec.traits[].name' 2>/dev/null || echo "<none found>") | _indent
-    echo -e "${LINE}"
+    echo -e "${LINE}\n"
   done
 fi
 
 # do a diff to see the changes side by side between the clustergroup and space
 echo -e "\nINFO: ${DIFF_TOOL%% *} between the clustergroup and space:"
 ${DIFF_TOOL} <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}")
+echo "${LINE}"
 
-# TODO: check the diffs to see if there are any capabilities not needed
+# final output
+echo -e "\n\n${LINE}\nSummary of clustergroup and space capabilities\n${LINE}"
 # output extra capabilities not required
 EXTRA_CAPABILITIES="$(diff -u <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE_OUTPUT}") | grep -vE '(^---)|(^-Cluster Group Capabilities$)' | grep '^-')"
 if [ -z "${EXTRA_CAPABILITIES}" ]
 then
   # no extra
-  echo -e "\nINFO: there are no extra/unused capabilities installed to the clustergroup"
+  echo -e "INFO: there are no extra/unused capabilities installed to the clustergroup"
 else
   # extra
-  echo -e "\nINFO: the following capabilities are NOT required by the profile(s) selected but have been installed (this is not a problem; just FYI):"
+  echo -e "INFO: the following capabilities are NOT required by the profile(s) selected but have been installed (this is not a problem; just FYI):"
   echo "${EXTRA_CAPABILITIES}" | cut -c 2- | _indent
 fi
 
@@ -155,12 +173,13 @@ MISSING_CAPABILITIES="$(diff -u <(echo "${CLUSTERGROUP_OUTPUT}") <(echo "${SPACE
 if [ -z "${MISSING_CAPABILITIES}" ]
 then
   # no missing
-  echo -e "\nINFO: all of the required capabilities were found installed to the clustergroup; the space should be 'ready'"
+  echo -e "\nINFO: all of the required capabilities were found installed to the clustergroup; capabilities shouldn't block the space from being 'ready'"
 else
   # missing
   echo -e "\nWARN: the following capabilities ARE required by the profile(s) selected but have not been installed; the space will not be 'ready' until they're installed:"
   echo "${MISSING_CAPABILITIES}" | cut -c 2- | _indent
 fi
+echo "${LINE}"
 
 # return to previous settings, if present
 echo -e "\nINFO: setting context back to previous settings; if set..."
