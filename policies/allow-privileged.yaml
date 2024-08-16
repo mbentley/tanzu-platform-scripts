@@ -1,0 +1,26 @@
+type:
+  kind: Policy
+  version: v1alpha1
+  package: vmware.tanzu.manage.v1alpha1.clustergroup.policy
+fullName:
+  clusterGroupName: mbentley-clustergroup
+  name: allow-privileged
+spec:
+  type: mutation-policy
+  recipe: label
+  recipeVersion: v1
+  input:
+    scope: "*"
+    targetKubernetesResources:
+      - apiGroups:
+          - ""
+        kinds:
+          - Namespace
+    label:
+      key: pod-security.kubernetes.io/enforce
+      value: privileged
+  namespaceSelector:
+    matchExpressions:
+      - key: spaces.tanzu.vmware.com/name
+        operator: Exists
+        values: []
