@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # use a specific k8s context (comment out to just use current)
 KUBECTL_CONTEXT=(--context mbentley-home-ns1-c1)
